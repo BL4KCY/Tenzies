@@ -75,3 +75,28 @@ main > button {
   border: none;
   border-radius: 5px;
 }
+
+.game-stats {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding: 10px 20px;
+  border-radius: 10px;
+  background-color: #eee;
+
+
+  text-transform: capitalize;
+	font-size: 1.4em;
+	line-height: 20px;
+	font-family: monospace;
+}
+
+.roll-counter {
+  height: fit-content;
+  background-color: #5035ffce;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 10px;
+}

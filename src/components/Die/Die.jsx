@@ -6,6 +6,8 @@ export default function Die(props) {
     <button
       className={props.isHeld ? 'held' : ''}
       onClick={props.hold}
+      aria-pressed={props.isHeld}
+      aria-label={`Die with value ${props.value} ${props.isHeld ? 'Held' : 'not held'}`}
     >{props.value}</button>
   )
 }

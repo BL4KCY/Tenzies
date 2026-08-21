@@ -1,15 +1,14 @@
-import { useState } from 'react'
+import { use, useEffect, useRef, useState } from 'react'
 import { nanoid } from 'nanoid'
 import Die from './components/Die/Die'
+import Timer from './components/Timer/Timer'
 import './App.css'
 import ReactConfetti from 'react-confetti'
-import confetti from 'canvas-confetti'
-
+import { useStopwatch } from 'react-timer-hook'
 
 function App() {
   function generateDice() {
-    console.log('generateDice Ran!!!!')
-    return new Array(10).fill(0).map(item => (
+    return new Array(10).fill(0).map((item,i) => (
       {
         id: nanoid(),
         randomValue: Math.floor(Math.random() * 6) + 1,
@@ -19,6 +18,10 @@ function App() {
   }
 
   const [dice, setDice] = useState(() => generateDice(null))
+  const [count, setCount] = useState(0)
+  
+  const newGameRef = useRef(null);
+  const timerRef = useRef(null);
 
   const dieList = dice.map(die => (
     <Die
@@ -34,6 +37,7 @@ function App() {
     setDice(prevDice => prevDice.map(die => (
       die.isHeld ? die : { ...die, randomValue: Math.floor(Math.random() * 6) + 1 }
     )))
+    setCount(prevCount => prevCount + 1)
   }
 
   function hold(id) {
@@ -44,48 +48,43 @@ function App() {
     ))
   }
 
-  function newGame() {
-    setDice(generateDice())
-  }
-
-  const isGameWon = dice.every(die => (
+  const isWon = dice.every(die => (
     die.randomValue === dice[0].randomValue && die.isHeld
   ))
 
-  function selebrate() {
-    // lift side
-    confetti({
-      particleCount: 100,
-      spread: 70,
-      angle: 60,
-      origin: { x: 0, y: 0.7 },
-    });
-    // right side
-    confetti({
-      particleCount: 100,
-      spread: 70,
-      angle: 120,
-      origin: { x: 1, y: 0.7 },
-    });
+  isWon && timerRef.current.pause();
+
+  function newGame() {
+    setDice(generateDice())
+    setCount(0)
+    timerRef.current.reset();
   }
 
-  isGameWon && selebrate()
+  useEffect(() => {
+    if (isWon && newGameRef.current !== null) {
+      newGameRef.current.focus()
+    }
+  }, [isWon])
 
   return (
     <main>
-      <h1>Tenzies</h1>
-      <p>
+      <div className='game-stats'>
+        <Timer ref={timerRef} />
+        <span className='roll-counter'>Rolls: {count < 10 ? '0': ''}{count}</span>
+      </div>
+      <h1 className='title'>Tenzies</h1>
+      <p className='description'>
         Roll until all dice are the same. Click each die to freeze it at its current value between rolls.
       </p>
       <div className="die-container">
         {dieList}
       </div>
       {
-        isGameWon
-          ? <button className='new-game' onClick={newGame}>New Game</button>
+        isWon
+          ? <button ref={newGameRef} className='new-game' onClick={newGame}>New Game</button>
           : <button className='roll-dice' onClick={rollDice}>Roll</button>
       }
-      {isGameWon && <ReactConfetti />}
+      {isWon && <ReactConfetti />}
     </main>
   )
 }
