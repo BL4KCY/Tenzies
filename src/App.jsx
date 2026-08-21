@@ -8,6 +8,7 @@ import confetti from 'canvas-confetti'
 
 function App() {
   function generateDice() {
+    console.log('generateDice Ran!!!!')
     return new Array(10).fill(0).map(item => (
       {
         id: nanoid(),
@@ -17,7 +18,7 @@ function App() {
     )
   }
 
-  const [dice, setDice] = useState(generateDice(null))
+  const [dice, setDice] = useState(() => generateDice(null))
 
   const dieList = dice.map(die => (
     <Die
